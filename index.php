@@ -69,4 +69,4 @@ else
     $loginUrl = $facebook->getLoginUrl(array('scope' => 'offline_access'));
 }
 
-require('view.php');
+require('view.phtml');
