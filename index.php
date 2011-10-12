@@ -26,13 +26,16 @@ else if (isset($_SESSION['user']))
 {
     try
     {
-        // try an API call - only foolproof way to ensure a valid access token
+        // if we need to make an API call, the Facebook PHP-SDK stored our
+        // access_token in $_SESSION.
         $user = (object) $facebook->api("/{$_SESSION['user']}");
     }
     catch (FacebookApiException $e)
     {
-        if (strpos($e->getMessage(), 'Error validating access token') !== false ||
-            strpos($e->getMessage(), 'Invalid OAuth access token') !== false)
+        // if our access_token is now invalid (i.e. user removed our app, or
+        // logged out of Facebook, etc.), we can recover here. this is the only
+        // way I know of to know if a token has been invalidated.
+        if ($e->getType() == 'OAuthException')
         {
             session_unset();
             session_destroy();
